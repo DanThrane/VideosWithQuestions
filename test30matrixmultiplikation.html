@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Questions in video</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="wrapper">
+<!-- 	<div id="frameOverlay"></div>  -->
+	<div id="player"></div>
+</div>
+<p id="removeQuestions">Fortsæt video</p>
+<p id="cursorPosition"></p>
+
+<script>
+var youtubeVideoId = 'b7cHDRjwfRo';
+var questions = [
+	{
+		timecode: 415, // 6:55, 1, 2 
+		questions: [
+			{
+				name: "firstq", 
+				answer: function(val) {return(val == 1);},
+				topoffset: 325,
+				leftoffset: 380
+			},
+			{
+				name: "secondq", 
+				answer: function(val) {return(val == 2);},
+				topoffset: 398,
+				leftoffset: 512
+			}
+		]
+	},
+	{
+		timecode: 503, // 8:23, -10, 24
+		questions: [
+			{
+				name: "thirdq", 
+				answer: function(val) {return(val == -10);},
+				topoffset: 400,
+				leftoffset: 485
+			},
+			{
+				name: "fourthq", 
+				answer: function(val) {return(val == 24);},
+				topoffset: 400,
+				leftoffset: 590
+			}
+		]
+	}
+];
+</script>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="interactivevideos.js"></script>
+</body>
+</html>
+

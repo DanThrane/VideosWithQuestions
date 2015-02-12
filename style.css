@@ -1,0 +1,15 @@
+.question {
+	width: 50px;
+	height: 25px;
+	font-size: 150%;
+}
+#frameOverlay {
+	z-index: 0;
+	position: absolute;
+	width: 800px;
+	height: 500px;
+}
+#player {
+	z-index: 1;
+}
+

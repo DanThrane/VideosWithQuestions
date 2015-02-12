@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Questions in video</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="wrapper">
+<!-- 	<div id="frameOverlay"></div> -->
+	<div id="player"></div>
+</div>
+<p id="removeQuestions">Fortsæt video</p>
+<p id="cursorPosition"></p>
+
+<script>
+var youtubeVideoId = '-H6cwuEcvic';
+var questions = [
+	{
+		timecode: 178, // 2:58, 1.2, 1 
+		questions: [
+			{
+				name: "firstq", 
+				answer: function(val) {return(Math.abs(val - 1.2) < 0.001);},
+				topoffset: 310,
+				leftoffset: 375
+			},
+			{
+				name: "secondq", 
+				answer: function(val) {return(val == 1);},
+				topoffset: 310,
+				leftoffset: 570
+			}
+		]
+	},
+	{
+		timecode: 319, // 5:19, 1, 0, 1.1, 1, 1, 1.2
+		questions: [
+			{
+				name: "thirdq", 
+				answer: function(val) {return(val == 1);},
+				topoffset: 140,
+				leftoffset: 300
+			},
+			{
+				name: "fourthq", 
+				answer: function(val) {return(val == 0);},
+				topoffset: 140,
+				leftoffset: 370
+			},
+			{
+				name: "fifthq", 
+				answer: function(val) {return(Math.abs(val - 1.1) < 0.001);},
+				topoffset: 140,
+				leftoffset: 560
+			},
+			{
+				name: "sixthq", 
+				answer: function(val) {return(val == 1);},
+				topoffset: 180,
+				leftoffset: 300
+			},
+			{
+				name: "seventhq", 
+				answer: function(val) {return(val == 1);},
+				topoffset: 180,
+				leftoffset: 370
+			},
+			{
+				name: "eightq", 
+				answer: function(val) {return(Math.abs(val - 1.2) < 0.001);},
+				topoffset: 180,
+				leftoffset: 560
+			}
+		]
+	}
+];
+</script>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="interactivevideos.js"></script>
+</body>
+</html>
+
