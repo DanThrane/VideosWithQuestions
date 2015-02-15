@@ -19,39 +19,6 @@
   <body>
     <div class="container">
       <div class="row">
-        <h1>Input elementer</h1>
-        <div class="col-lg-12">
-          <div class="input-group" style="width: 100px; padding-bottom: 10px;">
-            <input type="text" class="form-control" placeholder="">
-            <span class="input-group-btn">
-              <button class="btn btn-default" type="button" data-toggle="tooltip" data-placement="right" title="Tjek svar">
-                <i class="glyphicon glyphicon-pencil"></i>
-              </button>
-            </span>
-          </div>
-        </div>
-        <div class="col-lg-12">
-          <div class="input-group" style="width: 100px; padding-bottom: 10px;">
-            <input type="text" class="form-control" placeholder="">
-            <span class="input-group-btn">
-              <button class="btn btn-success" type="button" data-toggle="tooltip" data-placement="right" title="Svaret er rigtigt">
-                <i class="glyphicon glyphicon-ok"></i>
-              </button>
-            </span>
-          </div>
-        </div>
-        <div class="col-lg-12">
-          <div class="input-group" style="width: 100px; padding-bottom: 10px;">
-            <input type="text" class="form-control" placeholder="">
-            <span class="input-group-btn">
-              <button class="btn btn-danger" type="button" data-toggle="tooltip" data-placement="right" title="Svaret er forkert">
-                <i class="glyphicon glyphicon-remove"></i>
-              </button>
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="row">
         <div class="col-lg-9">
           <h1>Video</h1>
           <div id="wrapper">
@@ -61,22 +28,7 @@
         <div class="col-lg-3">
           <h3>Indhold</h3>
           
-          <ul>
-            <li><a href="#">00:00 - Afsnit 1</a></li>
-            <ul>
-              <li><a href="#">00:10 - Spørgsmål 1</a></li>
-            </ul>
-            <li><a href="#">01:00 - Afsnit 2</a></li>
-            <ul>
-              <li><a href="#">00:10 - Spørgsmål 2</a></li>
-              <li><a href="#">00:20 - Spørgsmål 3</a></li>
-              <li><a href="#">02:10 - Spørgsmål 4</a></li>
-            </ul>
-            <li><a href="#">02:43 - Afsnit 3</a></li>
-            <ul>
-              <li><a href="#">03:10 - Spørgsmål 5</a></li>
-              <li><a href="#">03:55 - Spørgsmål 6</a></li>
-            </ul>
+          <ul id="videoNavigation">
           </ul>
         </div>
       </div>
@@ -93,28 +45,49 @@
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript">
     var youtubeVideoId = 'eiSfEP7gTRw';
-    var questions = [
+    var timeline = [
       {
-        timecode: 130, // 2:10 - 6 
+        title: "Introduktion",
+        timecode: 0,
+        questions: []
+      },
+      {
+        title: "Addition",
+        timecode: 25,
         questions: [
           {
-            name: "firstq", 
-            answer: function(val) {return(val == 6);},
-            topoffset: 300,
-            leftoffset: 260
+            title: "Simpel addition",
+            timecode: 130, // 2:10 - 6 
+            fields: [
+              {
+                name: "firstq", 
+                answer: function(val) {return(val == 6);},
+                topoffset: 300,
+                leftoffset: 260
+              }
+            ]
           }
         ]
-      }, {
-        timecode: 155, // 2:35 - 5
+      },
+      {
+        title: "Subtraktion",
+        timecode: 140,
         questions: [
           {
-            name: "secondq", 
-            answer: function(val) {return(val == 5);},
-            topoffset: 170,
-            leftoffset: 285
+            title: "Subtraktion med tal",
+            timecode: 155, // 2:35 - 5
+            fields: [
+              {
+                name: "secondq", 
+                answer: function(val) {return(val == 5);},
+                topoffset: 170,
+                leftoffset: 285
+              }
+            ]
           }
         ]
-      }];
+      }
+    ];
     </script>
     <script src="js/interactivevideos.js"></script>
   </body>
