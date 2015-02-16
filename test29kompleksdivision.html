@@ -19,43 +19,11 @@
   <body>
     <div class="container">
       <div class="row">
-        <h1>Input elementer</h1>
-        <div class="col-lg-12">
-          <div class="input-group" style="width: 100px; padding-bottom: 10px;">
-            <input type="text" class="form-control" placeholder="">
-            <span class="input-group-btn">
-              <button class="btn btn-default" type="button" data-toggle="tooltip" data-placement="right" title="Tjek svar">
-                <i class="glyphicon glyphicon-pencil"></i>
-              </button>
-            </span>
-          </div>
-        </div>
-        <div class="col-lg-12">
-          <div class="input-group" style="width: 100px; padding-bottom: 10px;">
-            <input type="text" class="form-control" placeholder="">
-            <span class="input-group-btn">
-              <button class="btn btn-success" type="button" data-toggle="tooltip" data-placement="right" title="Svaret er rigtigt">
-                <i class="glyphicon glyphicon-ok"></i>
-              </button>
-            </span>
-          </div>
-        </div>
-        <div class="col-lg-12">
-          <div class="input-group" style="width: 100px; padding-bottom: 10px;">
-            <input type="text" class="form-control" placeholder="">
-            <span class="input-group-btn">
-              <button class="btn btn-danger" type="button" data-toggle="tooltip" data-placement="right" title="Svaret er forkert">
-                <i class="glyphicon glyphicon-remove"></i>
-              </button>
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="row">
         <div class="col-lg-9">
           <h1>Video</h1>
           <div id="wrapper">
-              <div id="player" style="width: 800px; height: 600px;"></div>
+            <div id="frameOverlay" style="width: 800px; height: 600px;"></div>
+            <div id="player" style="width: 800px; height: 600px;"></div>
           </div>
         </div>
         <div class="col-lg-3">
@@ -64,6 +32,10 @@
           <ul id="videoNavigation">
           </ul>
         </div>
+      </div>
+      <br /> <!-- TODO -->
+      <div class="row">
+        <a class="btn btn-default" id="checkAnswers">Tjek svar</a>
       </div>
       <div class="row">
         <h3>Debug info:</h3>

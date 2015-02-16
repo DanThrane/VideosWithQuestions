@@ -17,23 +17,6 @@ function placeInputField(fieldId, evalFunction, offsetTop, offsetLeft) {
         top: offsetTop + "px", 
         left: offsetLeft + "px"
     });
-
-    var button = $("#" + fieldId + " button");
-    button.tooltip();
-    button.click(function(e) {
-        var val = $("#" + fieldId + " input").val();
-        var symbol = $("#" + fieldId + " i");
-        symbol.removeClass("glyphicon-pencil glyphicon-remove glyphicon-ok");
-        button.removeClass("btn-default btn-danger btn-success");
-        
-        if (evalFunction(val)) {
-            symbol.addClass("glyphicon-ok");
-            button.addClass("btn-success");
-        } else {
-            symbol.addClass("glyphicon-remove");
-            button.addClass("btn-danger");
-        }
-    }); 
 }
 
 function initQuestions() {
@@ -86,8 +69,47 @@ function readyFunction() {
     player.on("timeupdate", handleTimeUpdate);
     player.on("seeked", handleSeeked);
     player.on("play", function() { removeAllQuestions(); }); // Remove all questions when we continue playing
-
     //player.play();
+
+    $("#checkAnswers").click(function(e) {
+        e.preventDefault();
+        var question = getVisibleQuestion();
+        console.log(question);
+        for (var i = 0; i < question.fields.length; i++) {
+            var field = question.fields[i];
+            var input = $("#" + field.name);
+            var val = input.val();
+            input.removeClass("correct error");
+
+            if (field.answer(val)) {
+                input.addClass("correct");
+            } else {
+                input.addClass("error");
+            }
+        };
+    });
+
+    $("#frameOverlay").mousemove(function(event) {
+        var parentOffset = $(this).parent().offset(); 
+        var x = parseInt(event.pageX - parentOffset.left);
+        var y = parseInt(event.pageY - parentOffset.top);
+
+        var msg = x + ", " + y;
+        $("#cursorPosition").text(msg);
+    });
+}
+
+function getVisibleQuestion() {
+    for (var i = 0; i < timeline.length; i++) {
+        var item = timeline[i];
+        for (var j = 0; j < item.questions.length; j++) {
+            var question = item.questions[j];
+            if (question.visible) {
+                return question;
+            }
+        };
+    };
+    return null;
 }
 
 function removeAllQuestions() {
@@ -137,14 +159,7 @@ function handleSeeked() {
 }
 
 function createInputField(id) {
-    return '<div class="input-group question" style="width: 100px; padding-bottom: 10px;" id="' + id + '">' +
-        '<input type="text" class="form-control" placeholder="">' +
-        '<span class="input-group-btn">' +
-          '<button class="btn btn-default" type="button" data-toggle="tooltip" data-placement="right" title="Tjek svar">' +
-            '<i class="glyphicon glyphicon-pencil"></i>' + 
-          '</button>' +
-        '</span>' +
-    '</div>'
+    return '<input type="text" class="question" placeholder="" id="' + id + '">';
 }
 
 function createNavItem(item, id) {

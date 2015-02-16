@@ -22,7 +22,8 @@
         <div class="col-lg-9">
           <h1>Video</h1>
           <div id="wrapper">
-              <div id="player" style="width: 800px; height: 600px;"></div>
+            <div id="frameOverlay" style="width: 800px; height: 600px;"></div>
+            <div id="player" style="width: 800px; height: 600px;"></div>
           </div>
         </div>
         <div class="col-lg-3">
@@ -31,6 +32,10 @@
           <ul id="videoNavigation">
           </ul>
         </div>
+      </div>
+      <br /> <!-- TODO -->
+      <div class="row">
+        <a class="btn btn-default" id="checkAnswers">Tjek svar</a>
       </div>
       <div class="row">
         <h3>Debug info:</h3>
@@ -62,8 +67,8 @@
               {
                 name: "firstq", 
                 answer: function(val) {return(val == 6);},
-                topoffset: 300,
-                leftoffset: 260
+                topoffset: 310,
+                leftoffset: 275
               }
             ]
           }
@@ -80,8 +85,8 @@
               {
                 name: "secondq", 
                 answer: function(val) {return(val == 5);},
-                topoffset: 170,
-                leftoffset: 285
+                topoffset: 180,
+                leftoffset: 300
               }
             ]
           }
