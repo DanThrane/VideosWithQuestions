@@ -12,11 +12,13 @@ var questions = [];
  */
 function placeInputField(fieldId, evalFunction, offsetTop, offsetLeft) {
     $("#wrapper").append(createInputField(fieldId));
-    $("#" + fieldId).css({
+    var field = $("#" + fieldId);
+    field.css({
         position: "absolute",
         top: offsetTop + "px", 
         left: offsetLeft + "px"
     });
+    field.mathquill("editable");
 }
 
 function initQuestions() {
@@ -60,7 +62,6 @@ function handleNavigationClick(item) {
 }
 
 function readyFunction() {
-    console.log("In readyFunction");
 
     initQuestions();
     buildNavigation();
@@ -74,14 +75,13 @@ function readyFunction() {
     $("#checkAnswers").click(function(e) {
         e.preventDefault();
         var question = getVisibleQuestion();
-        console.log(question);
         for (var i = 0; i < question.fields.length; i++) {
             var field = question.fields[i];
             var input = $("#" + field.name);
-            var val = input.val();
+            var val = parseTex(input.mathquill("latex")); 
             input.removeClass("correct error");
 
-            if (field.answer(val)) {
+            if (validateAnswer(field, val)) {
                 input.addClass("correct");
             } else {
                 input.addClass("error");
@@ -99,6 +99,34 @@ function readyFunction() {
     });
 }
 
+function validateAnswer(field, value) {
+    var answer = field.answer;
+    switch (answer.type) {
+        case "expression":
+            var expectedValue = KAS.parse(answer.value);
+            var givenAnswer = KAS.parse(value);
+            var result = KAS.compare(expectedValue.expr, givenAnswer.expr, answer.options);
+            return result.equal;
+        case "between":
+            var floatVal = parseFloat(value);
+            return floatVal >= answer.min && floatVal <= answer.max;
+        case "equal":
+            return value === answer.value;
+        case "in-list":
+            return answer.value.indexOf(value) >= 0;
+        case "in-expression-list":
+            var givenAnswer = KAS.parse(value);
+            for (var i = 0; i < answer.value.length; i++) {
+                var expr = KAS.parse(answer.value[i]); // TODO Answer should be cached
+                var result = KAS.compare(expr.expr, givenAnswer.expr, answer.options);
+                if (result.equal) return true;
+            };
+            return false;
+        case "custom":
+            return answer.validator(value);
+    }
+}
+
 function getVisibleQuestion() {
     for (var i = 0; i < timeline.length; i++) {
         var item = timeline[i];
@@ -113,7 +141,6 @@ function getVisibleQuestion() {
 }
 
 function removeAllQuestions() {
-    console.log("Remove questions")
     $(".question").remove();
     hideAllFields();
 }
@@ -130,7 +157,6 @@ function handleTimeUpdate() {
             player.pause();
             q.visible = true;
             q.shown = true;
-            console.log("Adding input fields");
             for(var k = 0; k < q.fields.length; k++) {
                 var field = q.fields[k];
                 placeInputField(
@@ -159,7 +185,7 @@ function handleSeeked() {
 }
 
 function createInputField(id) {
-    return '<input type="text" class="question" placeholder="" id="' + id + '">';
+    return '<span class="question" id="' + id + '"></span>';
 }
 
 function createNavItem(item, id) {
