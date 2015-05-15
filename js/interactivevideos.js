@@ -30,7 +30,7 @@ var ivids = {};
         for (var i = timeline.length - 1; i >= 0; i--) {
             var item = timeline[i];
             questions = questions.concat(item.questions);
-        };
+        }
     }
     
     function buildNavigation() {
@@ -48,19 +48,19 @@ var ivids = {};
                 nav.append(list);
                 for (var j = 0; j < item.questions.length; j++) {
                     var question = item.questions[j];
-                    var questionId = "navitem" + String(i) + String(j)
+                    var questionId = "navitem" + String(i) + String(j);
                     var questionNode = $(createNavItem(question, questionId));
                     
                     list.append(questionNode);
                     $("#" + questionId).click(handleNavigationClick(question));
-                };
+                }
             }
-        };
+        }
     }
     
     function handleNavigationClick(item) {
         return function(e) {
-            var skippedAt = player.currentTime()
+            var skippedAt = player.currentTime();
             e.preventDefault();
             player.currentTime(item.timecode); 
             player.play();
@@ -78,8 +78,10 @@ var ivids = {};
         timeline = tline;
         youtubeVideoId = videoId;
 
-        initQuestions();
-        buildNavigation();
+        if (tline !== undefined) {
+            initQuestions();
+            buildNavigation();
+        }
     
         player = Popcorn.smart(playerSelector, "http://www.youtube.com/watch?v=" + youtubeVideoId + "&controls=1");
         player.on("timeupdate", handleTimeUpdate);
@@ -116,7 +118,7 @@ var ivids = {};
                         correct: correct
                     });
                 }
-            };
+            }
             events.flush();
         });
     
@@ -166,8 +168,8 @@ var ivids = {};
                 if (question.visible) {
                     return question;
                 }
-            };
-        };
+            }
+        }
         return null;
     }
     
@@ -203,14 +205,14 @@ var ivids = {};
     function hideAllFields() {
         for (var i = questions.length - 1; i >= 0; i--) {
             questions[i].visible = false;
-        };
+        }
     }
     
     function handleSeeked() {
         for (var i = questions.length - 1; i >= 0; i--) {
             questions[i].visible = false;
             questions[i].shown = false;
-        };
+        }
         hideAllFields();
         removeAllQuestions();
     }
