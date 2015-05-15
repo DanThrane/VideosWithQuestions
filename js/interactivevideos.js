@@ -153,7 +153,7 @@ var ivids = {};
                     var expr = KAS.parse(answer.value[i]); // TODO Answer should be cached
                     var result = KAS.compare(expr.expr, givenAnswer.expr, answer.options);
                     if (result.equal) return true;
-                };
+                }
                 return false;
             case "custom":
                 return answer.validator(value);
@@ -199,7 +199,7 @@ var ivids = {};
                         field.leftoffset);
                 }
             }
-        };
+        }
     }
     
     function hideAllFields() {
@@ -215,6 +215,7 @@ var ivids = {};
         }
         hideAllFields();
         removeAllQuestions();
+        handleTimeUpdate();
     }
     
     function createInputField(id) {
@@ -234,10 +235,10 @@ var ivids = {};
      * @brief       Formats time into a human readable string.
      * @details     The returned string will be in the format [DD:][HH:]MM:SS
      * 
-     * @param time  Type: Integer. Time in seconds.
-     * @return      The time as a string
+     * @param time  number Time in seconds.
+     * @return      string Time as a string
      */
-    function formatTime (time) {
+    function formatTime(time) {
         var totalSecs = time;
         var totalMins = totalSecs / 60;
         var totalHours = totalMins / 60;
