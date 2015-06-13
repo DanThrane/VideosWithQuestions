@@ -5,7 +5,7 @@ var ivids = {};
     var timeline;
     var youtubeVideoId;
     var questions = [];
-    
+
     /**
      * @brief               Places a single input field used in questions.
      * @details             
@@ -30,7 +30,7 @@ var ivids = {};
         for (var i = timeline.length - 1; i >= 0; i--) {
             var item = timeline[i];
             questions = questions.concat(item.questions);
-        };
+        }
     }
     
     function buildNavigation() {
@@ -48,19 +48,19 @@ var ivids = {};
                 nav.append(list);
                 for (var j = 0; j < item.questions.length; j++) {
                     var question = item.questions[j];
-                    var questionId = "navitem" + String(i) + String(j)
+                    var questionId = "navitem" + String(i) + String(j);
                     var questionNode = $(createNavItem(question, questionId));
                     
                     list.append(questionNode);
                     $("#" + questionId).click(handleNavigationClick(question));
-                };
+                }
             }
-        };
+        }
     }
     
     function handleNavigationClick(item) {
         return function(e) {
-            var skippedAt = player.currentTime()
+            var skippedAt = player.currentTime();
             e.preventDefault();
             player.currentTime(item.timecode); 
             player.play();
@@ -78,8 +78,10 @@ var ivids = {};
         timeline = tline;
         youtubeVideoId = videoId;
 
-        initQuestions();
-        buildNavigation();
+        if (tline !== undefined) {
+            initQuestions();
+            buildNavigation();
+        }
     
         var wrapper = Popcorn.HTMLYouTubeVideoElement(playerSelector);
         wrapper.src = "http://www.youtube.com/watch?v=" + youtubeVideoId + "&controls=0";
@@ -119,7 +121,7 @@ var ivids = {};
                         correct: correct
                     });
                 }
-            };
+            }
             events.flush();
         });
     
@@ -154,7 +156,7 @@ var ivids = {};
                     var expr = KAS.parse(answer.value[i]); // TODO Answer should be cached
                     var result = KAS.compare(expr.expr, givenAnswer.expr, answer.options);
                     if (result.equal) return true;
-                };
+                }
                 return false;
             case "custom":
                 return answer.validator(value);
@@ -169,8 +171,8 @@ var ivids = {};
                 if (question.visible) {
                     return question;
                 }
-            };
-        };
+            }
+        }
         return null;
     }
     
@@ -200,22 +202,23 @@ var ivids = {};
                         field.leftoffset);
                 }
             }
-        };
+        }
     }
     
     function hideAllFields() {
         for (var i = questions.length - 1; i >= 0; i--) {
             questions[i].visible = false;
-        };
+        }
     }
     
     function handleSeeked() {
         for (var i = questions.length - 1; i >= 0; i--) {
             questions[i].visible = false;
             questions[i].shown = false;
-        };
+        }
         hideAllFields();
         removeAllQuestions();
+        handleTimeUpdate();
     }
     
     function createInputField(id) {
@@ -235,10 +238,10 @@ var ivids = {};
      * @brief       Formats time into a human readable string.
      * @details     The returned string will be in the format [DD:][HH:]MM:SS
      * 
-     * @param time  Type: Integer. Time in seconds.
-     * @return      The time as a string
+     * @param time  number Time in seconds.
+     * @return      string Time as a string
      */
-    function formatTime (time) {
+    function formatTime(time) {
         var totalSecs = time;
         var totalMins = totalSecs / 60;
         var totalHours = totalMins / 60;
