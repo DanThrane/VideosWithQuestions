@@ -81,7 +81,10 @@ var ivids = {};
         initQuestions();
         buildNavigation();
     
-        player = Popcorn.smart(playerSelector, "http://www.youtube.com/watch?v=" + youtubeVideoId + "&controls=1");
+        var wrapper = Popcorn.HTMLYouTubeVideoElement(playerSelector);
+        wrapper.src = "http://www.youtube.com/watch?v=" + youtubeVideoId + "&controls=0";
+
+        player = Popcorn(wrapper);
         player.on("timeupdate", handleTimeUpdate);
         player.on("seeked", handleSeeked);
         player.on("play", function() { removeAllQuestions(); }); // Remove all questions when we continue playing
