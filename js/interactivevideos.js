@@ -246,7 +246,7 @@ var ivids = {};
 
     function formatTimeUnit(unit) {
         if (unit < 10) return "0" + Math.floor(unit);
-        return unit;
+        return Math.floor(unit);
     }
 
     /**
