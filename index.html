@@ -1,162 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Videos with Questions Demo</title>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>TekVideo | Stedfunktionen og konstant accelereret bevægelse</title>
 
-    <link href="css/vendor/bootstrap.css" rel="stylesheet">
-    <link href="css/vendor/mathquill.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css"/>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    </head>
+    <body>
+        <div class="container-fluid " >
+            <div class='row content' >
+                <div class="col-sm-9">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-9">
-          <h1>Video</h1>
-          <div id="wrapper">
-            <div id="player" style="width: 800px; height: 600px;"></div>
-          </div>
+                    <div class="page-header">
+                        <h3>Stedfunktionen og konstant accelereret bevægelse</h3>
+                    </div>
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <div id="wrapper" style="z-index: 20"></div>
+                        <div id="player"></div>
+                    </div>
+                </div>
+    
+                <div class="col-sm-3 sidebar sidebar-right">
+                    <div class="page-header">
+                        <h3>Indhold</h3>
+                    </div>
+                    <ul id="videoNavigation">
+                    </ul>
+                    <div class="sidebar-pull-bottom">
+                        <button class="btn  btn-primary btn-block"  id="checkAnswers">
+                        <i class="fa fa-check"></i>
+                        Tjek svar
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-lg-3">
-          <h3>Indhold</h3>
-          
-          <ul id="videoNavigation">
-          </ul>
-        </div>
-      </div>
-      <br /> <!-- TODO -->
-      <div class="row">
-        <a class="btn btn-default" id="checkAnswers">Tjek svar</a>
-      </div>
-      <div class="row">
-        <h3>Debug info:</h3>
-        <b>Mouse position:</b> <span id="cursorPosition"></span>
-      </div>
-      
-      <footer style="height: 50px">
-      </footer>
-    </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="js/lib/popcorn.js"></script>
-    <script src="js/lib/underscore.js"></script>
-    <script src="js/lib/bootstrap.js"></script>
-    <script src="js/lib/mathquill.min.js"></script>
-    <script src="js/lib/kas.js"></script>
-    <script src="js/lib/tex-wrangler.js"></script>
-    <script type="text/javascript">
-    $(document).ready(function() {
-      ivids.bootstrap("#player", "eiSfEP7gTRw", [
-        {
-          title: "Introduktion",
-          timecode: 0,
-          questions: []
-        },
-        {
-          title: "Addition",
-          timecode: 25,
-          questions: [
-            {
-              title: "Simpel addition",
-              timecode: 130, // 2:10 - 6 
-              fields: [
-                {
-                  name: "firstq", 
-                  answer: {
-                    type: "custom",
-                    validator: function(val) { return(val == 6); }
-                  },
-                  topoffset: 300,
-                  leftoffset: 265
-                }, 
-                {
-                  name: "secondq", 
-                  answer: {
-                    type: "between",
-                    min: 0,
-                    max: 42
-                  },
-                  topoffset: 0,
-                  leftoffset: 0
-                },
-                {
-                  name: "thirdq", 
-                  answer: {
-                    type: "equal",
-                    value: "thisstring"
-                  },
-                  topoffset: 0,
-                  leftoffset: 100
-                },
-                {
-                  name: "fourthq", 
-                  answer: {
-                    type: "in-list",
-                    value: ["thisstring", "orthis"]
-                  },
-                  topoffset: 0,
-                  leftoffset: 200
-                },
-                {
-                  name: "fifthq", 
-                  answer: {
-                    type: "expression",
-                    value: "2x^2/4 - 5 + 3 + sqrt(y)", // will for example also validate for "2x^2/4 - 2 + sqrt(y)"
-                    options: {
-                      form: false, // check that the two expressions have the same form
-                      simplify: false // check that the second expression is simplified
-                    }
-                  },
-                  topoffset: 0,
-                  leftoffset: 300
-                },
-                {
-                  name: "sixthq", 
-                  answer: {
-                    type: "in-expression-list",
-                    value: ["2x - 5 + 3", "5y - 2"]
-                    // Options can be left blank. This will default to { form: false, simplify: false }
-                  },
-                  topoffset: 0,
-                  leftoffset: 400
-                }
-              ]
-            }
-          ]
-        },
-        {
-          title: "Subtraktion",
-          timecode: 140,
-          questions: [
-            {
-              title: "Subtraktion med tal",
-              timecode: 155, // 2:35 - 5
-              fields: [
-                {
-                  name: "secondq", 
-                  answer: {
-                    type: "custom",
-                    validator: function(val) { return(val == 5); }
-                  },
-                  topoffset: 170,
-                  leftoffset: 290
-                }
-              ]
-            }
-          ]
-        }
-      ]);
-    }); 
-    </script>
-    <script src="js/events.js"></script>
-    <script src="js/interactivevideos.js"></script>
-  </body>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="js/lib/popcorn.js"></script>
+        <script src="js/lib/underscore.js"></script>
+        <script src="js/lib/bootstrap.js"></script>
+        <script src="js/lib/mathquill.min.js"></script>
+        <script src="js/lib/kas.js"></script>
+        <script src="js/lib/tex-wrangler.js"></script>
+        <script src="js/interactivevideos.js"></script>
+        <script src="js/events.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                ivids.bootstrap(
+                    "#player",
+                    "5r8TkDyoBu4",
+                    true,
+                    [
+                        {
+                            "title": "Stedfunktionen",
+                            "timecode": 0,
+                            "questions": []
+                        }, 
+                        {
+                            "title": "Bevægelse med konstant hastighed",
+                            "timecode": 68,
+                            "questions": [{
+                                "title": "Brug af stedfunktionen",
+                                "timecode": 200,
+                                "fields": [{
+                                    "name": "field-0",
+                                    "topoffset": 298,
+                                    "leftoffset": 184,
+                                    "answer": {
+                                        "type": "between",
+                                        "min": 2.999,
+                                        "max": 3.001
+                                    }
+                                }, {
+                                    "name": "field-1",
+                                    "topoffset": 299,
+                                    "leftoffset": 283,
+                                    "answer": {
+                                        "type": "between",
+                                        "min": 3.499,
+                                        "max": 3.501
+                                    }
+                                }, {
+                                    "name": "field-2",
+                                    "topoffset": 298,
+                                    "leftoffset": 376,
+                                    "answer": {
+                                        "type": "between",
+                                        "min": 3.999,
+                                        "max": 4.001
+                                    }
+                                }],
+                                "visible": true,
+                                "shown": true
+                            }]
+                        }
+                    ]
+                );
+            });
+        </script>
+    </body>
 </html>
