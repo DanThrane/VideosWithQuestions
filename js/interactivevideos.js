@@ -2,38 +2,68 @@ var InteractiveVideoPlayer = (function () {
     var BASELINE_WIDTH = 640; // Wide 360p (Standard on YouTube)
     var BASELINE_HEIGHT = 360;
 
-    function InteractiveVideoPlayer(playerSelector) {
-        this.selector = playerSelector;
+    function InteractiveVideoPlayer(containerElement) {
+        var container = $(containerElement);
+        this.eventHandlers = {};
 
+        if (container !== undefined) {
+            this.playerElement = container.find(".player");
+            this.checkButton = container.find(".check-button");
+            this.navigationElement = container.find(".video-navigation");
+            this.wrapperElement = container.find(".wrapper");
+        }
     }
 
-    InteractiveVideoPlayer.prototype.initPlayer = function (videoId, isYouTube, timeline) {
+    InteractiveVideoPlayer.prototype.on = function (eventName, handler) {
+        var handlers = this.eventHandlers[eventName];
+        if (handlers === undefined) handlers = [];
+        handlers.push(handler);
+        this.eventHandlers[eventName] = handlers;
+    };
+
+    InteractiveVideoPlayer.prototype._fire = function (eventName, event) {
+        var handlers = this.eventHandlers[eventName];
+        if (handlers !== undefined) {
+            event.type = eventName;
+            for (var i = 0; i < handlers.length; i++) {
+                handlers[i](event);
+            }
+        }
+    };
+
+    InteractiveVideoPlayer.prototype.startPlayer = function (videoId, isYouTube, timeline) {
         var self = this;
         this.timeline = timeline;
         this.isYouTube = isYouTube;
         this.videoId = videoId;
+        this.questions = [];
 
         this.initQuestions();
         this.buildNavigation();
 
         var constructor = (this.isYouTube) ? Popcorn.HTMLYouTubeVideoElement : Popcorn.HTMLVimeoVideoElement;
-        var wrapper = constructor(this.playerSelector);
+        // Popcorn expects the element passed to be a DOM element, not a jQuery wrapper
+        var wrapper = constructor(this.playerElement[0]);
         wrapper.src = (this.isYouTube) ?
         "http://www.youtube.com/watch?v=" + videoId + "&controls=0" :
         "http://player.vimeo.com/video/" + videoId;
         this.player = Popcorn(wrapper);
 
         this.player.play();
-        this.player.on("timeupdate", this.handleTimeUpdate);
-        this.player.on("seeked", this.handleSeeked);
+        this.player.on("timeupdate", function () {
+            self.handleTimeUpdate();
+        });
+        this.player.on("seeked", function () {
+            self.handleSeeked();
+        });
         this.player.on("play", function () {
-            self.removeAllQuestions(); // Remove all questions when we continue playing
+            self.removeAllQuestions()
         });
         this.player.on("pause", function () {
             events.emit({
                 kind: "PAUSE_VIDEO",
                 video: document.location.href,
-                timecode: player.currentTime()
+                timecode: self.player.currentTime()
             }, true);
         });
 
@@ -41,7 +71,7 @@ var InteractiveVideoPlayer = (function () {
             self.initializeSize();
         });
         $(window).resize(function () {
-            self.initializeSize()
+            self.initializeSize();
         });
         setTimeout(function () {
             self.initializeSize();
@@ -50,22 +80,23 @@ var InteractiveVideoPlayer = (function () {
     };
 
     InteractiveVideoPlayer.prototype.destroy = function () {
-        Popcorn.destroy(player);
-        $(this.playerSelector).html("");
+        Popcorn.destroy(this.player);
+        this.playerElement.html("");
         this.removeAllQuestions();
+        this.eventHandlers = {};
     };
 
     InteractiveVideoPlayer.prototype.initializeSize = function () {
         var maxWidth = -1;
         var maxHeight = -1;
-        $(this.selector).children().each(function (index, element) {
+        this.playerElement.children().each(function (index, element) {
             var $element = $(element);
             var height = $element.height();
             var width = $element.width();
             if (width > maxWidth) maxWidth = width;
             if (height > maxHeight) maxHeight = height;
         });
-        $("#wrapper").width(maxWidth).height(maxHeight);
+        this.wrapperElement.width(maxWidth).height(maxHeight);
         this.scaleHeight = maxHeight / BASELINE_HEIGHT;
         this.scaleWidth = maxWidth / BASELINE_WIDTH;
     };
@@ -81,20 +112,20 @@ var InteractiveVideoPlayer = (function () {
     };
 
     InteractiveVideoPlayer.prototype.handleTimeUpdate = function () {
-        var timestamp = player.currentTime();
-        for (var i = questions.length - 1; i >= 0; i--) {
-            var q = questions[i];
+        var timestamp = this.player.currentTime();
+        for (var i = this.questions.length - 1; i >= 0; i--) {
+            var q = this.questions[i];
             if (q.timecode !== Math.round(timestamp) && q.visible) {
-                removeAllQuestions();
+                this.removeAllQuestions();
                 q.visible = false;
             } else if (q.timecode === Math.round(timestamp) && !q.visible && !q.shown) {
                 // Will cause a seek event, which in turn will reset everything
-                player.pause();
+                this.player.pause();
                 q.visible = true;
                 q.shown = true;
                 for (var k = 0; k < q.fields.length; k++) {
                     var field = q.fields[k];
-                    placeInputField(
+                    this.placeInputField(
                         field.name,
                         field.answer,
                         field.topoffset,
@@ -106,12 +137,12 @@ var InteractiveVideoPlayer = (function () {
 
     InteractiveVideoPlayer.prototype.initEventHandlers = function () {
         var self = this;
-        $("#checkAnswers").click(function (e) {
+        this.checkButton.click(function (e) {
             e.preventDefault();
             var questionID = self.getVisibleQuestionID();
             var question = self.getVisibleQuestion();
-            for (var i = 0; i < self.question.fields.length; i++) {
-                var field = self.question.fields[i];
+            for (var i = 0; i < question.fields.length; i++) {
+                var field = question.fields[i];
                 var input = $("#" + field.name);
                 var val = parseTex(input.mathquill("latex"));
                 input.removeClass("correct error");
@@ -146,7 +177,7 @@ var InteractiveVideoPlayer = (function () {
                 kind: "SKIP_TO_CONTENT",
                 video: document.location.href,
                 label: item.title,
-                videoTimeCode: player.currentTime(),
+                videoTimeCode: self.player.currentTime(),
                 skippedAt: skippedAt
             }, true);
         };
@@ -160,7 +191,7 @@ var InteractiveVideoPlayer = (function () {
     };
 
     InteractiveVideoPlayer.prototype.buildNavigation = function () {
-        var nav = $("#videoNavigation");
+        var nav = this.navigationElement;
         nav.html("<ul></ul>");
         for (var i = 0; i < this.timeline.length; i++) {
             var item = this.timeline[i];
@@ -195,14 +226,15 @@ var InteractiveVideoPlayer = (function () {
      * @param offsetLeft    Type: Integer. X offset relative to top-left corner of player.
      */
     InteractiveVideoPlayer.prototype.placeInputField = function (fieldId, evalFunction, offsetTop, offsetLeft) {
-        $("#wrapper").append(this.createInputField(fieldId));
+        var self = this;
+        this.wrapperElement.append(this.createInputField(fieldId));
         var field = $("#" + fieldId);
         field.css({
             position: "absolute",
-            top: (offsetTop * scaleHeight) + "px",
-            left: (offsetLeft * scaleWidth) + "px",
-            minWidth: 90 * scaleWidth,
-            minHeight: 20 * scaleHeight
+            top: (offsetTop * self.scaleHeight) + "px",
+            left: (offsetLeft * self.scaleWidth) + "px",
+            minWidth: 90 * self.scaleWidth,
+            minHeight: 20 * self.scaleHeight
         });
         field.mathquill("editable");
     };
@@ -223,10 +255,6 @@ var InteractiveVideoPlayer = (function () {
                     value = value.toLowerCase();
                     answer.value = answer.value.toLowerCase();
                 }
-                console.log(answer);
-                console.log(value);
-                console.log(answer.value);
-                console.log(answer.ignoreCase);
                 return value === answer.value;
             case "in-list":
                 return answer.value.indexOf(value) >= 0;
@@ -250,8 +278,8 @@ var InteractiveVideoPlayer = (function () {
     };
 
     InteractiveVideoPlayer.prototype.getVisibleQuestionID = function () {
-        for (var i = 0; i < timeline.length; i++) {
-            var item = timeline[i];
+        for (var i = 0; i < this.timeline.length; i++) {
+            var item = this.timeline[i];
             for (var j = 0; j < item.questions.length; j++) {
                 var question = item.questions[j];
                 if (question.visible) {
@@ -263,19 +291,19 @@ var InteractiveVideoPlayer = (function () {
     };
 
     InteractiveVideoPlayer.prototype.getVisibleQuestion = function () {
-        var id = getVisibleQuestionID();
+        var id = this.getVisibleQuestionID();
         if (id === null) return null;
-        return timeline[id[0]].questions[id[1]];
+        return this.timeline[id[0]].questions[id[1]];
     };
 
     InteractiveVideoPlayer.prototype.removeAllQuestions = function () {
-        $("#wrapper").find(".question").remove();
-        hideAllFields();
+        this.wrapperElement.find(".question").remove();
+        this.hideAllFields();
     };
 
     InteractiveVideoPlayer.prototype.hideAllFields = function () {
-        for (var i = questions.length - 1; i >= 0; i--) {
-            questions[i].visible = false;
+        for (var i = this.questions.length - 1; i >= 0; i--) {
+            this.questions[i].visible = false;
         }
     };
 
@@ -287,10 +315,10 @@ var InteractiveVideoPlayer = (function () {
         return '<li><a href="#" id="' + id + '">' + formatTime(item.timecode) + ' - ' + item.title + '</a></li>';
     };
 
-    InteractiveVideoPlayer.prototype.formatTimeUnit = function (unit) {
+    function formatTimeUnit(unit) {
         if (unit < 10) return "0" + Math.floor(unit);
         return Math.floor(unit);
-    };
+    }
 
     /**
      * @brief       Formats time into a human readable string.
@@ -299,7 +327,7 @@ var InteractiveVideoPlayer = (function () {
      * @param time  number Time in seconds.
      * @return      string Time as a string
      */
-    InteractiveVideoPlayer.prototype.formatTime = function (time) {
+    function formatTime(time) {
         var totalSecs = time;
         var totalMins = totalSecs / 60;
         var totalHours = totalMins / 60;
@@ -315,7 +343,7 @@ var InteractiveVideoPlayer = (function () {
         result += formatTimeUnit(mins) + ":";
         result += formatTimeUnit(secs);
         return result;
-    };
+    }
 
     return InteractiveVideoPlayer;
 }());
